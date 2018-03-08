@@ -1,0 +1,16 @@
+{
+  "name": "library_node",
+  "version": "0.0.1",
+  "description": "",
+  "main": "mysql",
+  "scripts": {
+    "test": ""
+  },
+  "license": "",
+  "devDependencies": {
+
+  },
+  "dependencies": {
+    "mysql": "^2.15.0"
+  }
+}
