@@ -2,6 +2,7 @@
 
 /* @var $this yii\web\View */
 /* @var $model app\models\AddBook */
+/* @var $delete app\models\Delete */
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -32,16 +33,30 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php
         $authors = Yii::$app->db->createCommand("SELECT `authors`.`name`, id FROM `authors`")
             ->queryAll();
+        if (empty($authors))
+            echo "Нет авторов";
         foreach ($authors as $author) {
             ?>
             <li>
                 <strong><?=$author["name"]?></strong>
-                <form action="">
-                    <input type="hidden" name="author_id" value="<?=$author["id"]?>">
-                    <input type="hidden" name="author_name" value="<?=$author["name"]?>">
-                    <button class="input_edit">Редактировать</button>
-                    <input type="submit" name="delete" value="Удалить">
-                </form>
+                <div style="display: flex; flex-direction: row">
+                    <form method="post">
+                        <input type="hidden" name="id" value="<?=$author["id"]?>">
+                        <input type="hidden" name="name" value="<?=$author["name"]?>">
+                        <button class="input_edit btn btn-primary" element=".authors_input">Редактировать</button>
+                    </form>
+                    <div style="    margin-top: -15px;">
+                        <?php
+                        $form = ActiveForm::begin([
+                            'id' => 'delete'
+                        ]) ?>
+                        <?= $form->field($delete, 'id')->hiddenInput(['value' => $author["id"]])->label(false); ?>
+                        <?= $form->field($delete, 'element')->hiddenInput(['value' => 'authors'])->label(false); ?>
+                        <?= Html::submitButton('Удалить', ['class' => 'btn btn-primary']) ?>
+                        <?php ActiveForm::end() ?>
+                    </div>
+                </div>
+
             </li>
         <?php
         }
@@ -52,15 +67,31 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php
         $books = Yii::$app->db->createCommand("SELECT `book`.`name`, id FROM `book`")
             ->queryAll();
+        if (empty($books))
+            echo "Нет книг";
+
         foreach ($books  as $book) {
             ?>
             <li>
                 <strong><?=$book["name"]?></strong>
+                <div style="display: flex; flex-direction: row">
+
                 <form action="">
-                    <input type="hidden" name="author_id" value="<?=$book["id"]?>">
-                    <input type="submit" name="edit" value="Редактировать">
-                    <input type="submit" name="delete" value="Удалить">
+                    <input type="hidden" name="id" value="<?=$book["id"]?>">
+                    <input type="hidden" name="name" value="<?=$book["name"]?>">
+                    <button class="input_edit btn btn-primary"  element=".book_input">Редактировать</button>
                 </form>
+                <div style="    margin-top: -15px;">
+                    <?php
+                    $form = ActiveForm::begin([
+                        'id' => 'delete'
+                    ]) ?>
+                    <?= $form->field($delete, 'id')->hiddenInput(['value' => $book["id"]])->label(false); ?>
+                    <?= $form->field($delete, 'element')->hiddenInput(['value' => 'book'])->label(false); ?>
+                    <?= Html::submitButton('Удалить', ['class' => 'btn btn-primary']) ?>
+                    <?php ActiveForm::end() ?>
+                </div>
+                    </div>
             </li>
             <?php
         }
@@ -71,6 +102,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php
         $library_list = Yii::$app->db->createCommand("SELECT `authors`.`name` AS A,book.`name` AS B FROM binding INNER JOIN book INNER JOIN `authors` WHERE binding.authors_id = `authors`.`id` AND binding.book_id = `book`.`id`")
             ->queryAll();
+        if (empty($library_list))
+            echo "Нет книг";
 
         foreach ($library_list as $Author){
             ?>
@@ -78,7 +111,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <p>Автор <strong>"<?=$Author["A"]?>"</strong></p>
                 <p>Книга  <?=$Author["B"]?></p>
             </li>
-<!--            --><?php
+        <?php
         }
         ?>
     </ul>
@@ -87,6 +120,9 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php
         $authors = Yii::$app->db->createCommand("SELECT `authors`.`name`, id FROM `authors`")
             ->queryAll();
+        if (empty($authors))
+            echo "Нет книг";
+
         foreach ($authors as $author){
             $books_count = Yii::$app->db->createCommand("SELECT COUNT(*) AS c FROM `binding` WHERE `authors_id`=" . $author["id"])
                 ->queryAll();

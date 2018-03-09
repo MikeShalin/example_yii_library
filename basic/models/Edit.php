@@ -12,7 +12,7 @@ use Yii;
 use yii\base\Model;
 
 
-class EditAuthor extends Model
+class Edit extends Model
 {
     public $book;
     public $authors;
