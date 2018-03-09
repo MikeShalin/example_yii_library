@@ -9,6 +9,8 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\AddBook;
+use app\models\EditAuthor;
 
 class SiteController extends Controller
 {
@@ -72,7 +74,7 @@ class SiteController extends Controller
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
+            return $this->render('admins');
         }
 
         $model = new LoginForm();
@@ -116,6 +118,7 @@ class SiteController extends Controller
         ]);
     }
 
+
     /**
      * Displays about page.
      *
@@ -124,5 +127,70 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
+    }
+
+    public function actionAdmins()
+    {
+        $model = new AddBook();
+        if ($model->load(Yii::$app->request->post())){
+            $id = [];
+            $authors = Yii::$app->db->createCommand("SELECT * FROM `authors`")
+                ->queryAll();
+            foreach ($authors as $author){
+                if($author['name'] === $_POST["AddBook"]["authors"]){
+                    $id["authors"] = $author['id'];
+                    break;
+                }
+            }
+            if (empty($id)) {
+                foreach ($_POST["AddBook"] as $key => $val) {
+                    Yii::$app->db->createCommand()->insert($key, [
+                        'name' => $val
+                    ])->execute();
+                    $id[$key] = Yii::$app->db->lastInsertID;
+                }
+                Yii::$app->db->createCommand()->insert('binding', [
+                    "authors_id" => intval($id["authors"]),
+                    "book_id" => intval($id["book"])
+                ])->execute();
+                $id = [];
+            } else {
+                foreach ($_POST["AddBook"] as $key => $val) {
+                    if($key !== "authors"){
+                        Yii::$app->db->createCommand()->insert($key, [
+                            'name' => $val
+                        ])->execute();
+                        $id[$key] = Yii::$app->db->lastInsertID;
+                    }
+                }
+                Yii::$app->db->createCommand()->insert('binding', [
+                    "authors_id" => $id["authors"],
+                    "book_id" => intval($id["book"])
+                ])->execute();
+                $id = [];
+            }
+            return $this->redirect(['index']);
+        }
+        $edit_author = new EditAuthor();
+        if ($edit_author->load(Yii::$app->request->post())){
+            Yii::$app->db->createCommand()->update('authors', ['name' => $_POST["EditAuthor"]["authors"]], "id = " . $_POST["EditAuthor"]["author_id"])->execute();
+            return $this->redirect(['admins']);
+        }
+
+        $id = Yii::$app->user->id;
+        if ($id === '100'){
+            return $this->render('admins', [
+                'model' => $model,
+            ]);
+        } else {
+            return $this->goHome();
+
+        }
+
+    }
+
+    public function actionSay($message = 'Hello')
+    {
+        return $this->render('say', ['message' => $message]);
     }
 }
