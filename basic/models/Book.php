@@ -9,7 +9,7 @@
 namespace app\models;
 
 
-class Library extends \yii\db\ActiveRecord
+class Book extends \yii\db\ActiveRecord
 {
 //    const STATUS_INACTIVE = 0;
 //    const STATUS_ACTIVE = 1;
