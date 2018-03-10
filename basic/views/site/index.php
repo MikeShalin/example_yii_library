@@ -17,7 +17,7 @@ $this->title = 'Home';
         foreach ($library_list as $Author){
             ?>
             <li>
-                <p>Автор<?=$Author["A"]?></p>
+                <p>Автор <?=$Author["A"]?></p>
                 <p>Книга  <strong>"<?=$Author["B"]?>"</strong></p>
             </li>
             <?php
