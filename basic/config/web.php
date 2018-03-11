@@ -50,7 +50,7 @@ $config = [
             'rules' => [
 //                '' => 'site/index',
 //                '<controller:\w+>/<action:\w+>/' => '<controller>/<action>',
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'v1\book'],
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'v1\books', 'pluralize' => true],
             ],
         ],
 
